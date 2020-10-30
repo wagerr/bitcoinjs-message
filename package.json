@@ -24,7 +24,6 @@
   },
   "scripts": {
     "coverage": "nyc tape test/*.js",
-    "prepublish": "npm run test",
     "standard": "standard",
     "test": "npm run standard && npm run unit",
     "unit": "tape test/*.js"
