@@ -1,25 +1,26 @@
 {
-  "name": "bitcoinjs-message",
-  "version": "2.1.3",
-  "description": "bitcoinjs-message",
+  "name": "@wagerr/wagerrjs-message",
+  "version": "2.1.1",
+  "description": "wagerrjs-message",
   "keywords": [
-    "bitcoinjs-message",
-    "bitcoin"
+    "wagerrjs-message",
+    "wagerr"
   ],
-  "homepage": "https://github.com/bitcoinjs/bitcoinjs-message",
+  "homepage": "https://github.com/wagerr/wagerrjs-message",
   "bugs": {
-    "url": "https://github.com/bitcoinjs/bitcoinjs-message/issues"
+    "url": "https://github.com/wagerr/wagerrjs-message/issues"
   },
   "license": "MIT",
   "files": [
-    "index.js",
-    "index.d.ts"
+    "index.js"
   ],
   "main": "./index.js",
-  "types": "./index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitcoinjs/bitcoinjs-message.git"
+    "url": "git+ssh://git@github.com/wagerr/wagerrjs-message.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "scripts": {
     "coverage": "nyc tape test/*.js",

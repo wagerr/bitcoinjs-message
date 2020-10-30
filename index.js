@@ -55,7 +55,7 @@ function decodeSignature (buffer) {
 }
 
 function magicHash (message, messagePrefix) {
-  messagePrefix = messagePrefix || '\u0018Bitcoin Signed Message:\n'
+  messagePrefix = messagePrefix || '\u0018Wagerr Signed Message:\n'
   if (!Buffer.isBuffer(messagePrefix)) {
     messagePrefix = Buffer.from(messagePrefix, 'utf8')
   }
@@ -113,29 +113,10 @@ function sign (
   )
 }
 
-function segwitRedeemHash (publicKeyHash) {
-  const redeemScript = Buffer.concat([
-    Buffer.from('0014', 'hex'),
-    publicKeyHash
-  ])
-  return hash160(redeemScript)
-}
-
-function decodeBech32 (address) {
-  const result = bech32.decode(address)
-  const data = bech32.fromWords(result.words.slice(1))
-  return Buffer.from(data)
-}
-
-function verify (message, address, signature, messagePrefix, checkSegwitAlways) {
+function verify (message, address, signature, messagePrefix) {
   if (!Buffer.isBuffer(signature)) signature = Buffer.from(signature, 'base64')
 
   const parsed = decodeSignature(signature)
-
-  if (checkSegwitAlways && !parsed.compressed) {
-    throw new Error('checkSegwitAlways can only be used with a compressed pubkey signature flagbyte')
-  }
-
   const hash = magicHash(message, messagePrefix)
   const publicKey = secp256k1.recover(
     hash,
@@ -148,31 +129,22 @@ function verify (message, address, signature, messagePrefix, checkSegwitAlways) 
 
   if (parsed.segwitType) {
     if (parsed.segwitType === SEGWIT_TYPES.P2SH_P2WPKH) {
-      actual = segwitRedeemHash(publicKeyHash)
+      const redeemScript = Buffer.concat([
+        Buffer.from('0014', 'hex'),
+        publicKeyHash
+      ])
+      const redeemScriptHash = hash160(redeemScript)
+      actual = redeemScriptHash
       expected = bs58check.decode(address).slice(1)
     } else if (parsed.segwitType === SEGWIT_TYPES.P2WPKH) {
+      const result = bech32.decode(address)
+      const data = bech32.fromWords(result.words.slice(1))
       actual = publicKeyHash
-      expected = decodeBech32(address)
+      expected = Buffer.from(data)
     }
   } else {
-    if (checkSegwitAlways) {
-      try {
-        expected = decodeBech32(address)
-        // if address is bech32 it is not p2sh
-        return bufferEquals(publicKeyHash, expected)
-      } catch (e) {
-        const redeemHash = segwitRedeemHash(publicKeyHash)
-        expected = bs58check.decode(address).slice(1)
-        // base58 can be p2pkh or p2sh-p2wpkh
-        return (
-          bufferEquals(publicKeyHash, expected) ||
-          bufferEquals(redeemHash, expected)
-        )
-      }
-    } else {
-      actual = publicKeyHash
-      expected = bs58check.decode(address).slice(1)
-    }
+    actual = publicKeyHash
+    expected = bs58check.decode(address).slice(1)
   }
 
   return bufferEquals(actual, expected)
