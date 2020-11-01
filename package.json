@@ -1,5 +1,5 @@
 {
-  "name": "@wagerr/wagerrjs-message",
+  "name": "@wagerr-wdk/wagerrjs-message",
   "version": "2.1.1",
   "description": "wagerrjs-message",
   "keywords": [
@@ -18,9 +18,6 @@
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/wagerr/wagerrjs-message.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
   },
   "scripts": {
     "coverage": "nyc tape test/*.js",
